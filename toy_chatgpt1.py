@@ -5,6 +5,8 @@ import streamlit as st
 import numpy as np
 from openai import OpenAI
 import utils.streamlit_utils as stutl 
+import gradio_client
+# from gradio_client import Client
 
 
 DEFAULT_CHAT_MODEL="gpt-3.5-turbo"
@@ -69,6 +71,24 @@ def get_llm_gemini_response(prompt, role="assistant"):
     print('get_llm_gemini_response() ======= > \n',response)
     return response
 
+def get_temp_llm_response(prompt):
+    print('get_temp_llm_response(). called with prompt: ', prompt)
+
+    temp_llm_url=stutl.get_secret_("TEMP_LLM_URL")
+    print('get_temp_llm_response(). temp_llm_url=', temp_llm_url)
+
+    # client = Client("http://127.0.0.1:7862")
+    print('get_temp_llm_response(). temp_llm_url=', temp_llm_url)
+
+    llm_client = gradio_client.Client(temp_llm_url)
+    result = llm_client.predict(
+        message=prompt,
+        api_name="/chat",
+    )
+
+    print(result)
+    return result
+
 
 def llm_chatgpt1_main():
     # Display assistant response in chat message container
@@ -76,7 +96,9 @@ def llm_chatgpt1_main():
 
     # take input from user and then call response_func to get response
     # display response to the chat
-    response = stutl.user_input_resp_one_iteration(response_func=get_llm_gemini_response)
+    # resp_func=get_llm_gemini_response
+    resp_func=get_temp_llm_response
+    response = stutl.user_input_resp_one_iteration(response_func=resp_func)
 
 
 ############################
